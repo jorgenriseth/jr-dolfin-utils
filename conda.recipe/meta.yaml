@@ -1,0 +1,40 @@
+{% set pyproject = load_file_data('pyproject.toml') %}
+
+package:
+  name: jr-dolfin-utils
+  version: {{ pyproject["project"]["version"] }}
+
+source:
+  path: ..
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - fenics ==2019.1.0
+    {% for dep in pyproject["project"]["dependencies"] %}
+    - {{ dep.lower() }}
+    {% endfor %}
+
+test:
+  source_files:
+    - tests
+  requires:
+    - pytest
+    - pytest-cov
+  commands:
+    - pytest
+
+about:
+  home: https://github.com/jorgenriseth/jr-dolfin-utils
+  summary: Various utilities for legacy dolfin
+  license: {{ pyproject.get('license') }}
+  license_file: LICENSE
